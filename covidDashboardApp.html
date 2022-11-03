@@ -1,0 +1,117 @@
+<template>
+    <header>COVID-19 Global Case tracking using LWC</header>
+    <div class="slds-box slds-p-around_none slds-m-top_x-small slds-m-bottom_medium slds-m-horizontal_none slds-wrap space">
+        <lightning-layout >
+            <lightning-layout-item flexibility="auto" padding="around-small">
+                <div class="bg-primary white-color custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    Total Confirmed
+                </br>
+                {total.total_confirmed}</div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" padding="around-small">
+                <div class="bg-warning white-color custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    Total Active
+                </br>{total.total_active}</div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" padding="around-small">
+                <div class="bg-success white-color custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    Total Recovered
+                </br>{total.total_recovered}</div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" padding="around-small">
+                <div class="bg-danger white-color custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    Total Deaths
+                </br>{total.total_deaths}</div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" padding="around-small">
+                <div class="bg-info white-color custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    Fatality Rate
+                </br>{total.fatality_rate}</div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" padding="around-small">
+                <div class="bg-secondary white-color custom-box slds-box slds-p-around_medium slds-text-align_center">
+                    Recovery Rate
+                </br>{total.recovery_rate}</div>
+            </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-m-left_medium slds-m-right_medium">
+            <div class="slds-p-around_medium lgc-bg">
+            <div class="box-container">
+                  <h1>COVID Data by Country</h1>
+                  <div class="toggle-container">
+                    
+                  <div data-name="LIST" class={isListSelected} onclick={listHandler}>List</div>
+                  <div data-name="CHART" class={isChartSelected} onclick={listHandler}>Chart</div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          
+          <template if:true={showListView}>
+            
+        <div class="slds-m-left_medium slds-m-right_medium slds-m-left_medium slds-m-bottom_medium">
+            <div class="slds-p-around_medium lgc-bg">
+              <label class="label-text">Enter your country Name</label>
+              <lightning-input  type="text" autocomplete="off" label="Enter Your country Name" variant="label-hidden" onkeyup={searchHandler}></lightning-input>
+              <span class="slds-badge slds-m-around_medium fatalityColumnClass-danger">Higher than Average Fatality</span>
+              <span class="slds-badge slds-m-around_medium recoveryColumnClass-success">Higher than Average Recovery</span>
+              <span class="slds-badge slds-m-around_medium recoveryColumnClass-warning">Lower than Average Recovery</span>
+              <span class="slds-badge slds-m-around_x-medium fatalityColumnClass-success">Lower than Average Fatality</span>
+              <span class="slds-badge slds-m-around_x-medium activeColumnClass">More Active than Recovered</span>
+              <span class="slds-badge slds-m-around_x-medium recoveredColumnClass">More Recovered than Active</span>
+            </div>
+        </div>
+            <div class="slds-m-left_medium slds-m-right_medium slds-m-left_medium slds-m-bottom_medium">
+                <table class="table table-bordered ">
+                    <thead>
+                      <tr>					
+                        <th>Country Name</th>
+                        <th>Confirmed</th>
+                        <th>Active</th>
+                        <th>Recovered</th>
+                        <th>Deaths</th>
+                        <th>Fatality Rate</th>
+                        <th>Recovery Rate</th>
+                        <th>Last Updated</th>
+                      </tr>
+                    </thead>
+                   
+                    <tbody id="myTable">
+                      <template for:each={filteredtableData}  for:item="item"> 
+                        <tr key={item.Country_Region}>
+                          <td class="countryName">{item.Country_Region}</td>
+                          <td>{item.Confirmed}</td>
+                          <td class={item.activeColumnClass}>{item.Active}</td>
+                          <td class={item.recoveredColumnClass}>{item.Recovered}</td>
+                          <td>{item.Deaths}</td>
+                          <td class={item.fatalityColumnClass}>{item.fatality_rate}</td>
+                          <td class={item.recoveryColumnClass}>{item.recovery_rate}</td>
+                          <td>{item.formattedDate}</td>
+                        </tr>
+                      </template>
+                       <template if:false={filteredtableData.length}>
+                         <div>No Data Found</div>
+                       </template>
+                     
+                    </tbody>
+                  </table>
+            </div>
+          </template>
+          <template if:false={showListView}>
+            <div class="slds-m-left_medium slds-m-right_medium slds-m-left_medium slds-m-bottom_medium">
+              <div class="slds-p-around_medium lgc-bg">
+                 <label class="label-text">Select your country</label>
+                <lightning-combobox
+                name="country"
+                label="country"
+                value={countrySelected}
+                placeholder="Select Your country"
+                options={countryList}
+                variant="label-hidden"
+                onchange={handleCountryChange} ></lightning-combobox>
+              </div>
+            </div>
+            <div class="chartContainer" lwc:dom="manual"></div>
+            </template>
+    </div>
+</template>
